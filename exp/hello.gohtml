@@ -1,0 +1,9 @@
+<h1>Hello, {{.FirstName}} {{.LastName}}, you are {{.Age}}</h1>
+<h1>
+    Your hobbies are:
+</h1>
+<ul>
+    {{range .Hobbies}}
+    <li>{{.}}</li>
+    {{end}}
+</ul>

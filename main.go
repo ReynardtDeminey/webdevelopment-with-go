@@ -9,6 +9,7 @@ import (
 )
 
 var homeTemplate *template.Template
+var contactTemplate *template.Template
 
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "text/html")
@@ -19,7 +20,9 @@ func home(w http.ResponseWriter, r *http.Request) {
 
 func contact(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "text/html")
-	fmt.Fprint(w, "Please feel free to contact us at abc@gmail.com")
+	if err := contactTemplate.Execute(w, nil); err != nil {
+		panic(err)
+	}
 }
 
 func faq(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +42,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	contactTemplate, err = template.ParseFiles("views/contact.gohtml")
+	if err != nil {
+		panic(err)
+	}
+
 	r := mux.NewRouter()
 	r.NotFoundHandler = http.HandlerFunc(notFound)
 	r.HandleFunc("/", home)

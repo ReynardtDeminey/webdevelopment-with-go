@@ -3,38 +3,32 @@ package main
 import (
 	"net/http"
 
-	"github.com/ReynardtDeminey/webdevelopment-with-go/views"
+	"github.com/ReynardtDeminey/webdevelopment-with-go/controllers"
 	"github.com/gorilla/mux"
 )
 
-var (
-	homeView    *views.View
-	contactView *views.View
-	signupView  *views.View
-)
+// var (
+// 	homeView    *views.View
+// 	contactView *views.View
+// )
 
-func home(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "text/html")
-	must(homeView.Render(w, nil))
-	// err := homeView.Template.ExecuteTemplate(w, homeView.Layout, nil)
-	// if err != nil {
-	// 	panic(err)
-	// }
-}
+// func home(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-type", "text/html")
+// 	must(homeView.Render(w, nil))
+// 	// err := homeView.Template.ExecuteTemplate(w, homeView.Layout, nil)
+// 	// if err != nil {
+// 	// 	panic(err)
+// 	// }
+// }
 
-func contact(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "text/html")
-	must(contactView.Render(w, nil))
-	// err := contactView.Template.ExecuteTemplate(w, contactView.Layout, nil)
-	// if err != nil {
-	// 	panic(err)
-	// }
-}
-
-func signup(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "text/html")
-	must(signupView.Render(w, nil))
-}
+// func contact(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-type", "text/html")
+// 	must(contactView.Render(w, nil))
+// 	// err := contactView.Template.ExecuteTemplate(w, contactView.Layout, nil)
+// 	// if err != nil {
+// 	// 	panic(err)
+// 	// }
+// }
 
 func must(err error) {
 	if err != nil {
@@ -54,15 +48,18 @@ func must(err error) {
 // }
 
 func main() {
-	homeView = views.NewView("bootstrap", "views/home.gohtml")
-	contactView = views.NewView("bootstrap", "views/contact.gohtml")
-	signupView = views.NewView("bootstrap", "views/signup.gohtml")
+	// homeView = views.NewView("bootstrap", "views/home.gohtml")
+	// contactView = views.NewView("bootstrap", "views/contact.gohtml")
+	staticC := controllers.NewStatic()
+	usersC := controllers.NewUsers()
 
 	r := mux.NewRouter()
 	// r.NotFoundHandler = http.HandlerFunc(notFound)
-	r.HandleFunc("/", home)
-	r.HandleFunc("/contact", contact)
-	r.HandleFunc("/signup", signup)
+	r.Handle("/", staticC.Home).Methods("GET")
+	r.Handle("/contact", staticC.Contact).Methods("GET")
+	r.Handle("/faq", staticC.Faq).Methods("GET")
+	r.HandleFunc("/signup", usersC.New).Methods("GET")
+	r.HandleFunc("/signup", usersC.Create).Methods("POST")
 	// r.HandleFunc("/faq", faq)
 
 	http.ListenAndServe(":3000", r)

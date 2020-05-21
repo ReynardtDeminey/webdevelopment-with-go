@@ -1,34 +1,21 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/ReynardtDeminey/webdevelopment-with-go/controllers"
+	"github.com/ReynardtDeminey/webdevelopment-with-go/models"
 	"github.com/gorilla/mux"
 )
 
-// var (
-// 	homeView    *views.View
-// 	contactView *views.View
-// )
-
-// func home(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-type", "text/html")
-// 	must(homeView.Render(w, nil))
-// 	// err := homeView.Template.ExecuteTemplate(w, homeView.Layout, nil)
-// 	// if err != nil {
-// 	// 	panic(err)
-// 	// }
-// }
-
-// func contact(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-type", "text/html")
-// 	must(contactView.Render(w, nil))
-// 	// err := contactView.Template.ExecuteTemplate(w, contactView.Layout, nil)
-// 	// if err != nil {
-// 	// 	panic(err)
-// 	// }
-// }
+const (
+	host     = "localhost"
+	port     = 5432
+	user     = "postgres"
+	password = "password"
+	dbname   = "photo_blog_dev"
+)
 
 func must(err error) {
 	if err != nil {
@@ -48,10 +35,17 @@ func must(err error) {
 // }
 
 func main() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	us, err := models.NewUserService(psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	defer us.Close()
+	us.AutoMigrate()
 	// homeView = views.NewView("bootstrap", "views/home.gohtml")
 	// contactView = views.NewView("bootstrap", "views/contact.gohtml")
 	staticC := controllers.NewStatic()
-	usersC := controllers.NewUsers()
+	usersC := controllers.NewUsers(us)
 
 	r := mux.NewRouter()
 	// r.NotFoundHandler = http.HandlerFunc(notFound)
